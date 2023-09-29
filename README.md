@@ -1,1 +1,8 @@
-Cl2 module with 3d graphics based on ThreeJs
+# Модуль 3d графики
+Слон-модуль для трехмерной графики на основе Threejs
+
+# Инструкция
+Добавьте модуль в Ваш слон-проект:
+```
+clon add git@github.com:pavelvasev/lib3d.cl.git
+```
