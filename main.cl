@@ -5,18 +5,30 @@ obj "scene" {
   print "scene"
   
   output: cell // threejs scene
+
+  init {:
+    self.output.set( new three.Scene() )
+  :}
 }
 
 obj "view" {
-  output := dom.element "canvas"
+  in {
+    style: cell
+  }
+  output := dom.element "canvas" style=@style
+  is_element: cell
 }
 
-obj "renderer" {
+obj "render" {
   in {
-    view: cell   // объект dom куды рисовать. или dom или view?
-    camera: cell // камера которой рисовать
-    scene: cell  // сцена которую рисовать
+    input: cell  // сцена которую рисовать
+    view_dom: cell   // объект dom куды рисовать. или dom или view?
+    camera: cell // камера которой рисовать    
   }
+
+  renderer: cell
+
+  react @view_dom
 }
 
 obj "camera" {
