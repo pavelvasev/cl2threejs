@@ -6,3 +6,10 @@
 ```
 clon add git@github.com:pavelvasev/lib3d.cl.git
 ```
+Подключите модуль в исходниках:
+```
+import lib3d="lib3d"
+```
+Используйте модуль:
+```
+```
