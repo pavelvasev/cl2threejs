@@ -13,6 +13,8 @@ os.spawn "npx" "--yes" "live-server" stdio="inherit"
 // запускаем перекомпиляцию при изменении файлов
 //os.spawn "clon" "watch" stdio="inherit"
 
+os.spawn "clon" "compile" stdio="inherit"
+
 import std="std"
 react (os.watch "..") { val |
      if (apply {: return val.filename.endsWith(".cl") :}) {

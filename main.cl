@@ -143,7 +143,9 @@ obj "render" {
   :}
 
   func "animate" {:
+
     requestAnimationFrame( animate );
+    //console.log(self.renderer.is_set, self.input.is_set)
     if (!self.renderer.is_set) return; // нечего рисовать то    
     if (!self.input.is_set) return; // нечего рисовать то    
 
@@ -169,18 +171,22 @@ obj "render" {
       //console.log("renderer setsize",installed_w,installed_h,de, de.offsetWidth)
       renderer.setSize( installed_w.get(),installed_h.get(), false );
 
-      cam.updateWorldMatrix(true);
-
-      renderer.info.reset();
-      renderer.clear(); // вручную чистим - чтобы subrender-еры не чистили
-
-      renderer.render( scene, cam );
-
-      if (self.subrenderers.is_set) {
-        for (let r of env.params.subrenderers)
-          r.subrender( env.renderer );
-      }      
     }  
+
+    cam.updateWorldMatrix(true);
+
+    renderer.info.reset();
+    renderer.clear(); // вручную чистим - чтобы subrender-еры не чистили
+
+    //console.log("animate!",cam)
+
+    renderer.render( scene, cam );
+
+    if (self.subrenderers.is_set) {
+      for (let r of env.params.subrenderers)
+        r.subrender( env.renderer );
+    }
+      
   :}
 
   init {:
@@ -238,21 +244,32 @@ obj "camera_control" {
 
   react (when_all @camera @dom @type) {:
     let t = self.type.get()
+
+    let camera = self.camera.get()
     
-    let cc = new CONTROLS[ t ]( self.camera.get(), self.dom.get() )
+    let cc = new CONTROLS[ t ]( camera, self.dom.get() )
 
     if (self.output.is_set)
       self.output.get().dispose()
 
     self.output.set( cc )
-    //console.log("control configured",cc)
+    //console.log("control configured",cc,self.dom.get())
+
+    camera.position.set( 0, 20, 100 );
+    cc.update();
   :}
 
 }
 
+// вообще говоря надо на вход не позиции брать а буфер
+// ну потому что буфер это уже что-то что можно рисовать. и главное использовать в разных графических элементах
 obj "points" {
   in {
-    position: cell
+    position: cell 
+    // positions и colors
+    // тут бы сделать канал, чтобы ссылку не держать
+    // но делая канал мы не получаем уведомления если устанавливается константа
+    // следовательно это вопрос к модели так-то. к порядку ее работы.
     positions: channel
     colors: channel
     radiuses: channel
@@ -272,7 +289,13 @@ obj "points" {
     self.output.set( sceneObject )
   :}
 
+  // ну вот и вопрос, это же и линиям надо.. и в element уже есть..
+  react (when_all @output @position) {: 
+    self.output.get().position.set( ...self.position.get() )
+  :}  
+
   react @positions {: v |
+    //console.log("pts positions!",v)
     self.geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array(v), 3 ) );
     self.geometry.needsUpdate = true;    
   :}
@@ -291,6 +314,7 @@ obj "points" {
     self.geometry.needsUpdate = true;    
   :}
   react @color {: v |
+    //console.log("pts color!",v)
     self.material.color = somethingToColor(v);
     self.material.needsUpdate = true
   :}
@@ -302,3 +326,5 @@ obj "points" {
 
   //output := element "Points" @geometry @material position=@position ch=@ch
 }
+
+//func "rgb"
