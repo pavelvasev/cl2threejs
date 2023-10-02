@@ -14,11 +14,17 @@ obj "main" {
   
   output := box {
     dom.element "h3" "Scene: "
-    
-    s: lib3d.scene
+
+    s: lib3d.scene {
+      lib3d.point_light
+      lib3d.points positions=[0,0,0, 10,10,10, 0,5,0 ]
+    }
+
+    cam: lib3d.camera
+    cam_control: lib3d.camera_control camera=@cam.output dom=@view.output
     view: lib3d.view style="width: 100%; background: grey; height: 80vh"
-    rend: lib3d.render input=@s view_dom=@view.output
+    rend: lib3d.render input=@s view_dom=@view.output camera=@cam.output
     
   }
 
-}
+} 
