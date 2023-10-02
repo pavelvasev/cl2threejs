@@ -23,7 +23,7 @@ obj "main" {
     cam: lib3d.camera
     cam_control: lib3d.camera_control camera=@cam.output dom=@view.output
     view: lib3d.view style="width: 100%; background: grey; height: 80vh"
-    rend: lib3d.render input=@s view_dom=@view.output camera=@cam.output
+    rend: lib3d.render input=@s.output view_dom=@view.output camera=@cam.output
     
   }
 

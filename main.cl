@@ -1,6 +1,12 @@
+import THREE="js:three" 
+       dom="dom"
+       CONTROLS="js:three/addons/controls/OrbitControls.js"
+
+/*
 import THREE="https://unpkg.com/three@0.157.0/build/three.module.js" 
        dom="dom"
        CONTROLS="https://unpkg.com/three@0.157.0/examples/jsm/controls/OrbitControls.js"
+*/       
 
 paste "
 function somethingToColor( theColorData )
@@ -53,8 +59,8 @@ obj "element" {
         let parent = self
         let parent_obj = parent.output.get()        
         for (let child_obj of children) {
-            if (!(child_dom instanceof THREE.Object3D)) continue
-            parent_obj.add( child_dom )
+            if (!(child_obj instanceof THREE.Object3D)) continue
+            parent_obj.add( child_obj )
         }
     :}    
 
@@ -194,7 +200,6 @@ obj "render" {
 }
 
 obj "camera" {
-  print "camera"
 
   in {
     position: cell [0,0,0]  // положение
@@ -233,13 +238,14 @@ obj "camera_control" {
 
   react (when_all @camera @dom @type) {:
     let t = self.type.get()
-    xxx
+    
     let cc = new CONTROLS[ t ]( self.camera.get(), self.dom.get() )
 
     if (self.output.is_set)
       self.output.get().dispose()
 
     self.output.set( cc )
+    //console.log("control configured",cc)
   :}
 
 }
