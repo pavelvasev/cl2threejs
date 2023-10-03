@@ -32,7 +32,6 @@ obj "element" {
   
   output: cell // threejs object3d 
 
-  rest_values: extract @rest
 
   x := apply @cf @self
 
@@ -40,7 +39,7 @@ obj "element" {
     self.is_lib3d_element = true
   :}
 
-  react (when_all @rest_values @tag) {: vals|
+  react (list @rest @tag) {: vals|
     if (self.output.is_set)
       console.warn("lib3d element: already constructed",vals)
     else {
@@ -50,7 +49,7 @@ obj "element" {
     }
   :}
 
-  react (when_all @output @position) {: 
+  react (list @output @position) {: 
     self.output.get().position.set( ...self.position.get() )
   :}
 
@@ -65,7 +64,7 @@ obj "element" {
     :}    
 
     react @xx.output @sync_children
-    xx: extract @child_elem_outputs
+    xx: xtract @child_elem_outputs
     //react @child_elem_outputs { v| print "oooxxx=" @v }
 
     child_elem_outputs := apply {: children |
@@ -242,7 +241,7 @@ obj "camera_control" {
 
   output: cell
 
-  react (when_all @camera @dom @type) {:
+  react (list @camera @dom @type) {:
     let t = self.type.get()
 
     let camera = self.camera.get()
@@ -290,7 +289,7 @@ obj "points" {
   :}
 
   // ну вот и вопрос, это же и линиям надо.. и в element уже есть..
-  react (when_all @output @position) {: 
+  react (list @output @position) {: 
     self.output.get().position.set( ...self.position.get() )
   :}  
 
