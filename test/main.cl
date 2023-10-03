@@ -26,7 +26,7 @@ obj "main" {
     s: lib3d.scene {
       lib3d.point_light
       //lib3d.points positions=[0,0,0, 10,10,10, 0,5,0 ] color=[1,0,1]
-      p1: lib3d.points color=[1,0,1] positions=(apply @makegrid @w @w)
+      p1: lib3d.points color=[1,0,1] positions=(apply @makegrid @w @d2.value)
       lib3d.points [0,0,10] color=[0,1,0] positions=@p1.positions
     }
 
@@ -38,13 +38,40 @@ obj "main" {
     // ну получается dom.input интереснее тем что он добавит пропертю value и будет ее ловить.
     // это хорошо. но для этого надо тогда - задать передачу rest-значений. хотя бы в рест-значения.
 
-    d1: dom.element "input" type="range" min=0 max=200 //value=10
+    dom.element "span" "select w"
+    //d1: dom.input "range" min=0 max=200 init_value=10
+    d1: dom.input "range" min=0 max=15 init_value=10
+    d2: dom.input "range" min=0 max=15 disabled=@do_join
+        //init_value=(if @do_join { return @d1.value } else { return 10 })
+        init_value=10
+    print "d2.iv=" @d2.init_value
+    do_join := 1 
+    if @do_join {
+       bind @d1.value @d2.init_value
+    } 
+    dom.element "label" {
+      cb: dom.checkbox init_value=@do_join //checked=true
+      bind @cb.value @do_join
+      dom.element "span" "объединить"
+      //q := @cb.value
+      //print "q=" @q 
+    }
+
+    //dom.input "range"
+
+    //dom.element "input" type="range"
+    
+    w := @d1.value
+
+    //print "@d1.output" @d1.output
+    //d1: dom.element "input" type="range" min=0 max=200 //value=10
     //w := react (dom.event @d1.output "input") {: event | console.log("see input",event) :}
     //w := (react (dom.event @d1.output "input") {: event | return event.target.value :}) or 10
-    w := 10
+
+    //w := 10
     // вот такой вариант но не очень ведь это..
-    react (dom.event @d1.output "input") {: event | w.submit( event.target.value ) :}
-    print "w=" @w
+    //react (dom.event @d1.output "input") {: event | w.submit( event.target.value ) :}
+    //print "w=" @w
 
     cam: lib3d.camera
     cam_control: lib3d.camera_control camera=@cam.output dom=@view.output
