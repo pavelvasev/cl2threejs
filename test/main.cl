@@ -44,17 +44,23 @@ obj "main" {
     d2: dom.input "range" min=0 max=15 disabled=@do_join
         //init_value=(if @do_join { return @d1.value } else { return 10 })
         init_value=10
-    print "d2.iv=" @d2.init_value
+    //print "d2.iv=" @d2.init_value
+    print "do_join = " @do_join
     do_join := 1 
     if @do_join {
        bind @d1.value @d2.init_value
-    } 
+       print "bind seems working, @d1.value=" @d1.value
+       dom.element "h1" "HOHO"
+       print "HOHO CREATED!!!!!!!!!!!!!!!!!!!!!!!!"
+    } else {
+      print "do-join do nothing"
+    }
     dom.element "label" {
       cb: dom.checkbox init_value=@do_join //checked=true
       bind @cb.value @do_join
       dom.element "span" "объединить"
       //q := @cb.value
-      //print "q=" @q 
+      //print "q=" @q
     }
 
     //dom.input "range"
