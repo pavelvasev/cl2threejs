@@ -20,11 +20,11 @@ import std="std"
 // но вообще надо взять clon-dir и в режиме any работать.
 react (os.watch "../../..") { val |
      print "os watch reaction" @val
-     if (apply {: return val.filename.indexOf(".cl.") >= 0 :}) // результат компиляции
-       { exit 0 }
+     return (if (apply {: return val.filename.indexOf(".cl.") >= 0 :}) // результат компиляции
+       { return 0 }
      else {
         print "detected change in .cl file -> recompile! " @val
        k: os.spawn "clon" "compile" stdio="inherit"
-       exit @k.exitcode
-     }
+       return @k.exitcode
+     })
 }

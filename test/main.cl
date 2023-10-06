@@ -1,7 +1,7 @@
 /* это главный файл проекта. он получает управление при его подключении к другим проектам.
 здесь можно указать определения процессов, функций, выполнить разные действия.
 введенные определения затем можно использовать в других проектах и на веб-странице.
-*/
+*/  
 
 import std="std" dom="dom" lib3d="lib3d"
 
@@ -21,7 +21,7 @@ func "makegrid" {: w h |
 obj "main" {
   
   output := box {
-    dom.element "h3" "Scene: "
+    dom.element "h3" "Scene: "  
 
     s: lib3d.scene {
       lib3d.point_light
@@ -47,14 +47,18 @@ obj "main" {
     //print "d2.iv=" @d2.init_value
     print "do_join = " @do_join
     do_join := 1 
-    if @do_join {
+
+    fff: if @do_join {
        bind @d1.value @d2.init_value
-       print "bind seems working, @d1.value=" @d1.value
+       //print "bind seems working, @d1.value=" @d1.value
        dom.element "h1" "HOHO"
-       print "HOHO CREATED!!!!!!!!!!!!!!!!!!!!!!!!"
+       //print "HOHO CREATED!!!!!!!!!!!!!!!!!!!!!!!!"
     } else {
       print "do-join do nothing"
     }
+
+    //print "fff tree=" @fff.tree.children "fff=" @fff
+
     dom.element "label" {
       cb: dom.checkbox init_value=@do_join //checked=true
       bind @cb.value @do_join
