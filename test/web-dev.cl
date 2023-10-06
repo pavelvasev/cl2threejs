@@ -19,8 +19,9 @@ import std="std"
 // так далеко чтобы видеть изменения в clon
 // но вообще надо взять clon-dir и в режиме any работать.
 react (os.watch "../../..") { val |
+     print "os watch reaction" @val
      if (apply {: return val.filename.indexOf(".cl.") >= 0 :}) // результат компиляции
-       { exit 0 } 
+       { exit 0 }
      else {
         print "detected change in .cl file -> recompile! " @val
        k: os.spawn "clon" "compile" stdio="inherit"

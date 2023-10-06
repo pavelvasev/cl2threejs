@@ -29,11 +29,13 @@ obj "element" {
       position: cell
       cf&: cell // дети
   }
+
+  tree: tree_node
   
   output: cell // threejs object3d 
 
 
-  x := apply @cf @self
+  apply_children @cf
 
   init {:
     self.is_lib3d_element = true
@@ -74,7 +76,7 @@ obj "element" {
             res.push( ch.output )
         }
         return res
-      :} @self.children
+      :} @self.tree.children
 }
 
 obj "point_light" {
@@ -82,6 +84,7 @@ obj "point_light" {
     position: cell
     cf&: cell
   }
+  tree: tree_node
   output := element "PointLight" 0xffffff 1.5 position=@position cf=@cf
   init {:
     self.is_lib3d_element = true  
@@ -92,6 +95,7 @@ obj "scene" {
   in {
     cf&: cell
   }
+  tree: tree_node
   output := element "Scene" cf=@cf
 }
 
@@ -99,6 +103,7 @@ obj "view" {
   in {
     style: cell
   }
+  tree: tree_node
   output := dom.element "canvas" style=@style
   is_element: cell
 }
@@ -211,7 +216,7 @@ obj "camera" {
     lookat: cell [0,0,0]    // куда смотрит
     theta: 0 // угол поворота
   }
-  
+  tree: tree_node
   output: cell // threejs camera
 
   init {:
@@ -277,6 +282,7 @@ obj "points" {
     ch&: cell
   }
 
+  tree: tree_node
   output: cell
 
   init {:
