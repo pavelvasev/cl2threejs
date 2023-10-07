@@ -1,13 +1,27 @@
 /* это главный файл проекта. он получает управление при его подключении к другим проектам.
 здесь можно указать определения процессов, функций, выполнить разные действия.
 введенные определения затем можно использовать в других проектах и на веб-странице.
-*/  
+*/
+
+/* todo: 
+   - buffer вместо positions сделать. это полезно и ближе к реальности.
+   а так.. ну если что встроенный адаптер если массив подали..
+*/
 
 import std="std" dom="dom" lib3d="lib3d"
 
 obj "box" {
   in { cf&:cell }
   output := dom.element "div" style="display: flex; flex-direction: column; border: 1px solid;" cf=@cf
+}
+
+obj "column" {
+  in { 
+     style: cell ""
+     cf&:cell 
+  }
+  tree: tree_node
+  output := dom.element "div" style=( + "display: flex; flex-direction: column; " @style) cf=@cf
 }
 
 func "makegrid" {: w h |
@@ -20,8 +34,22 @@ func "makegrid" {: w h |
 
 obj "main" {
   
-  output := box {
-    dom.element "h3" "Scene: "  
+  output := column style="height: 95vh" {
+    dom.element "h3" "Scene: "
+
+    b1:= dom.element "button" "Нажми"
+    react (dom.event @b1 "click") {: 
+       console.log("he!");
+       d1.init_value.submit( Math.floor( Math.random()*100 ) )
+    :}
+
+    cbj: dom.checkbox "прыгать" false
+    if @cbj.value {
+      react (std.timer) {:
+        d1.init_value.submit( Math.floor( Math.random()*100 ) )        
+      :}
+    }
+
 
     s: lib3d.scene {
       lib3d.point_light
@@ -40,31 +68,34 @@ obj "main" {
 
     dom.element "span" "select w"
     //d1: dom.input "range" min=0 max=200 init_value=10
-    d1: dom.input "range" min=0 max=15 init_value=10
-    d2: dom.input "range" min=0 max=15 disabled=@do_join
+    d1: dom.input "range" min=0 max=150 init_value=10
+    d2: dom.input "range" min=0 max=150 disabled=@do_join
         //init_value=(if @do_join { return @d1.value } else { return 10 })
         init_value=10
     //print "d2.iv=" @d2.init_value
     print "do_join = " @do_join
     do_join := 1 
 
-    fff: if @do_join {
-       bind @d1.value @d2.init_value
-       //print "bind seems working, @d1.value=" @d1.value
-       dom.element "h1" "HOHO"
-       //print "HOHO CREATED!!!!!!!!!!!!!!!!!!!!!!!!"
-    } else {
-      print "do-join do nothing"
-    }
-
     //print "fff tree=" @fff.tree.children "fff=" @fff
-
-    dom.element "label" {
-      cb: dom.checkbox init_value=@do_join //checked=true
+/*
+    dom.element "label" { 
+      cb: dom.input_checkbox init_value=@do_join //checked=true
       bind @cb.value @do_join
       dom.element "span" "объединить"
       //q := @cb.value
       //print "q=" @q
+    }
+*/   
+    cb: dom.checkbox "объединить" @do_join
+    bind @cb.value @do_join
+
+    fff: if @do_join {
+       bind @d1.value @d2.init_value
+       //print "bind seems working, @d1.value=" @d1.value
+       //dom.element "h1" "HOHO"
+       //print "HOHO CREATED!!!!!!!!!!!!!!!!!!!!!!!!"
+    } else {
+      print "do-join do nothing"
     }
 
     //dom.input "range"
@@ -84,8 +115,21 @@ obj "main" {
     //print "w=" @w
 
     cam: lib3d.camera
-    cam_control: lib3d.camera_control camera=@cam.output dom=@view.output
-    view: lib3d.view style="width: 100%; background: grey; height: 80vh"
+    cam_control: lib3d.camera_control camera=@cam.output dom=@rend.canvas //dom=@view.output
+
+    //view: lib3d.view style="background: grey; flex: 1;"
+    view: dom.element style="background: grey; flex: 1; overflow: hidden;" {
+      dom.element style="position: absolute; padding: 1em; z-index: 2; background: rgba(100,100,100,50%);" {
+        if @do_join {
+         dom.element "h1" "HOHO" style="color: white;"
+         bt:= dom.element "button" "Нажми меня"
+         react (dom.event @bt "click") {: 
+           console.log("he:"); do_join.submit(false) 
+         :}
+        }
+      }
+    }
+
     rend: lib3d.render input=@s.output view_dom=@view.output camera=@cam.output
     
   }

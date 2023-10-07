@@ -117,6 +117,7 @@ obj "render" {
   }
 
   renderer: cell
+  canvas: cell
   private_camera: cell
   installed_w: cell 1 
   installed_h: cell 1
@@ -133,7 +134,7 @@ obj "render" {
       self.renderer.get().dispose()
 
     let r = new THREE.WebGLRenderer( 
-        {canvas: dom, 
+        {//canvas: dom, 
          preserveDrawingBuffer : true // надо для скриншотов
          ,logarithmicDepthBuffer: true  // без этого наши точки глючат.. да и поверхности глючат..
          // Early Fragment Test
@@ -142,6 +143,9 @@ obj "render" {
       // надо для renderstats с учетом subrenderers
       r.info.autoReset = false;
       r.autoClear = false;
+
+      dom.appendChild( r.domElement )
+      canvas.submit( r.domElement )
 
     self.renderer.submit( r )
   :}
@@ -156,9 +160,11 @@ obj "render" {
     let renderer = self.renderer.get()
     let scene = self.input.get()
     let cam = self.private_camera.get()
-    let de = self.renderer.get().domElement;
+    //let de = self.renderer.get().domElement;
+    let de = self.view_dom.get()
 
     if (de.clientWidth != installed_w.get() || de.clientHeight != installed_h.get()) {
+      //console.log("mismatch. client=",de.clientWidth,de.clientHeight)
     //if (Math.abs(de.clientWidth - installed_w) + Math.abs(de.clientHeight-installed_h) > 100) {
       installed_w.set( de.clientWidth );
       installed_h.set( de.clientHeight );
@@ -172,8 +178,9 @@ obj "render" {
         cam.updateProjectionMatrix();  
       }
 
-      //console.log("renderer setsize",installed_w,installed_h,de, de.offsetWidth)
+      //console.log("renderer setsize",installed_w.get(),installed_h.get())
       renderer.setSize( installed_w.get(),installed_h.get(), false );
+      //renderer.setViewport( 0, 0, installed_w.get(),installed_h.get() );
 
     }  
 
