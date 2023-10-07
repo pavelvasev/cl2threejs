@@ -272,6 +272,10 @@ obj "camera_control" {
 
 }
 
+func "buffer" {: arr items_per_elem |
+  return new THREE.BufferAttribute( new Float32Array(arr), items_per_elem || 3 ) 
+:}
+
 // вообще говоря надо на вход не позиции брать а буфер
 // ну потому что буфер это уже что-то что можно рисовать. и главное использовать в разных графических элементах
 obj "points" {
@@ -308,16 +312,16 @@ obj "points" {
 
   react @positions {: v |
     //console.log("pts positions!",v)
-    self.geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array(v), 3 ) );
+    self.geometry.setAttribute( 'position', v );
     self.geometry.needsUpdate = true;    
   :}
   react @radiuses {: v |
-    self.geometry.setAttribute( 'radiuses', new THREE.BufferAttribute( new Float32Array(v), 1 ) );
+    self.geometry.setAttribute( 'radiuses', v );
     self.geometry.needsUpdate = true;    
   :}  
   react @colors {: v |
-    if (v?.length > 0) {
-      self.geometry.setAttribute( 'color', new THREE.BufferAttribute( new Float32Array(v), 3 ) );
+    if (v) {
+      self.geometry.setAttribute( 'color', v );
       self.material.vertexColors = true;
     } else {
       self.geometry.deleteAttribute( 'color' );
