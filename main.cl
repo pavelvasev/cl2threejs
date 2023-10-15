@@ -70,8 +70,10 @@ mixin "tree_node" {
       child_elem_outputs := apply {: children |
           let res = []
           for (let ch of children) {
-              if (!ch.is_lib3d_element) continue
-              // todo убрать это
+              // решено убрать т.к. там и так потом проверка есть.
+              // а писать ради этого is_lib3d_element..
+              // хотя можно и миксинами теперь. ну ладно, уберу пока.
+              // if (!ch.is_lib3d_element) continue              
               res.push( ch.output )
           }
           return res
@@ -308,7 +310,7 @@ obj "points" {
   // ну вот и вопрос, это же и линиям надо.. и в element уже есть..
   react (list @output @position) {: 
     self.output.get().position.set( ...self.position.get() )
-  :}  
+  :}
 
   react @positions {: v |
     //console.log("pts positions!",v)
