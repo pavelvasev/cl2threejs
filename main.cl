@@ -46,8 +46,9 @@ mixin "tree_node" {
         console.warn("lib3d element: already constructed",vals)
       else {
         let tag = self.tag.get()
-        console.log("using tag=",tag)
-        self.output.set( new THREE[ tag ]( ...self.rest.get() ) )
+        //console.log("using tag=",tag)
+        if (self.tag.is_set && tag)
+            self.output.set( new THREE[ tag ]( ...self.rest.get() ) )
       }
     :}
 
@@ -296,8 +297,7 @@ obj "points" {
     ch&: cell
   }
 
-  imixin { tree_node }
-  output: cell
+  imixin { element position=@position tag=false cf=@ch }
 
   init {:
     //self.is_lib3d_element = true
