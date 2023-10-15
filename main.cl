@@ -41,15 +41,14 @@ mixin "tree_node" {
         :}
     */
 
-    react (list @rest @tag) {: vals|
-      if (self.output.is_set)
-        console.warn("lib3d element: already constructed",vals)
-      else {
-        let tag = self.tag.get()
+    react (list @rest @tag) {: vals|      
+      let tag = self.tag.get()
         //console.log("using tag=",tag)
-        if (self.tag.is_set && tag)
-            self.output.set( new THREE[ tag ]( ...self.rest.get() ) )
-      }
+      if (self.tag.is_set && tag) {
+        if (self.output.is_set)
+          console.warn("lib3d element: already constructed",vals)
+        self.output.set( new THREE[ tag ]( ...self.rest.get() ) )          
+      }      
     :}
 
     react (list @output @position) {: 
@@ -284,7 +283,7 @@ func "buffer" {: arr items_per_elem |
 // ну потому что буфер это уже что-то что можно рисовать. и главное использовать в разных графических элементах
 obj "points" {
   in {
-    position: cell 
+    //position: cell 
     // positions и colors
     // тут бы сделать канал, чтобы ссылку не держать
     // но делая канал мы не получаем уведомления если устанавливается константа
@@ -294,10 +293,11 @@ obj "points" {
     radiuses: channel
     color: cell 0xffffff
     radius: cell 1
+    n_rest**: cell
     ch&: cell
   }
 
-  imixin { element position=@position tag=false cf=@ch }
+  imixin { element tag=false cf=@ch **n_rest }
 
   init {:
     //self.is_lib3d_element = true
@@ -306,11 +306,6 @@ obj "points" {
     let sceneObject = new THREE.Points( self.geometry, self.material );
 
     self.output.set( sceneObject )
-  :}
-
-  // ну вот и вопрос, это же и линиям надо.. и в element уже есть..
-  react (list @output @position) {: 
-    self.output.get().position.set( ...self.position.get() )
   :}
 
   react @positions {: v |

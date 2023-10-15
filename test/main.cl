@@ -56,7 +56,7 @@ obj "main" {
       lib3d.point_light
       //lib3d.points positions=[0,0,0, 10,10,10, 0,5,0 ] color=[1,0,1]
       p1: lib3d.points color=[1,0,1] positions=(apply @makegrid @w @d2.value | lib3d.buffer 3)
-      lib3d.points [0,0,10] color=[0,1,0] positions=@p1.positions
+      lib3d.points position=[0,0,10] color=[0,1,0] positions=@p1.positions
     }
 
     //dom.input type="range"
