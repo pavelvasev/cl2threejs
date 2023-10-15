@@ -19,94 +19,92 @@ function somethingToColor( theColorData )
    рацио наблюдается и в том и в другом случае.
    в случае threejs-объектов - что можно свободно ими пользоваться.
    в случае lib3d-объектов - логическая замкнутость + возможность доступа к их каналам.
-*/       
+*/
 
-obj "element" {
-  in {
-      tag: cell "Object3D" // todo: param
-      // это cl-объект с output в котором dom
-      rest*: cell // todo: тоже бы param?
-      position: cell
-      cf&: cell // дети
-  }
+mixin "tree_node" {
 
-  tree: tree_node
-  
-  output: cell // threejs object3d 
-
-
-  apply_children @cf
-
-  init {:
-    self.is_lib3d_element = true
-  :}
-
-  react (list @rest @tag) {: vals|
-    if (self.output.is_set)
-      console.warn("lib3d element: already constructed",vals)
-    else {
-      let tag = self.tag.get()
-      console.log("using tag=",tag)
-      self.output.set( new THREE[ tag ]( ...self.rest.get() ) )
+  obj "element" {
+    in {
+        tag: cell "Object3D" // todo: param
+        // это cl-объект с output в котором dom
+        rest*: cell // todo: тоже бы param?
+        position: cell
+        cf&: cell // дети
     }
-  :}
+    
+    output: cell // threejs object3d 
+    apply_children @cf
 
-  react (list @output @position) {: 
-    self.output.get().position.set( ...self.position.get() )
-  :}
+    init {:
+      self.is_lib3d_element = true
+    :}
 
-    func "sync_children" {: children |
-        //console.log("sync_children", self+'')
-        let parent = self
-        let parent_obj = parent.output.get()        
-        for (let child_obj of children) {
-            if (!(child_obj instanceof THREE.Object3D)) continue
-            parent_obj.add( child_obj )
-        }
-    :}    
+    react (list @rest @tag) {: vals|
+      if (self.output.is_set)
+        console.warn("lib3d element: already constructed",vals)
+      else {
+        let tag = self.tag.get()
+        console.log("using tag=",tag)
+        self.output.set( new THREE[ tag ]( ...self.rest.get() ) )
+      }
+    :}
 
-    react @xx.output @sync_children
-    xx: xtract @child_elem_outputs
-    //react @child_elem_outputs { v| print "oooxxx=" @v }
+    react (list @output @position) {: 
+      self.output.get().position.set( ...self.position.get() )
+    :}
 
-    child_elem_outputs := apply {: children |
-        let res = []
-        for (let ch of children) {
-            if (!ch.is_lib3d_element) continue
-            res.push( ch.output )
-        }
-        return res
-      :} @self.tree.children
-}
+      func "sync_children" {: children |
+          //console.log("sync_children", self+'')
+          let parent = self
+          let parent_obj = parent.output.get()        
+          for (let child_obj of children) {
+              if (!(child_obj instanceof THREE.Object3D)) continue
+              parent_obj.add( child_obj )
+          }
+      :}
 
-obj "point_light" {
-  in {
-    position: cell
-    cf&: cell
+      react @xx.output @sync_children
+      xx: xtract @child_elem_outputs
+      //react @child_elem_outputs { v| print "oooxxx=" @v }
+
+      child_elem_outputs := apply {: children |
+          let res = []
+          for (let ch of children) {
+              if (!ch.is_lib3d_element) continue
+              // todo убрать это
+              res.push( ch.output )
+          }
+          return res
+        :} @self.children
   }
-  tree: tree_node
-  output := element "PointLight" 0xffffff 1.5 position=@position cf=@cf
-  init {:
-    self.is_lib3d_element = true  
-  :}  
-}
 
-obj "scene" {
-  in {
-    cf&: cell
+  obj "point_light" {
+    in {
+      position: cell
+      cf&: cell
+    }
+    output := element "PointLight" 0xffffff 1.5 position=@position cf=@cf
+    init {:
+      self.is_lib3d_element = true  
+    :}  
   }
-  tree: tree_node
-  output := element "Scene" cf=@cf
-}
 
-obj "view" {
-  in {
-    style: cell
+  obj "scene" {
+    in {
+      cf&: cell
+    }
+    output := element "Scene" cf=@cf
   }
-  tree: tree_node
-  output := dom.element "canvas" style=@style
-  is_element: cell
-}
+
+  obj "view" {
+    in {
+      style: cell
+    }
+    output := dom.element "canvas" style=@style
+    is_element: cell
+  }
+
+} // mixin "tree_node"
 
 obj "render" {
   in {
@@ -223,7 +221,9 @@ obj "camera" {
     lookat: cell [0,0,0]    // куда смотрит
     theta: 0 // угол поворота
   }
-  tree: tree_node
+
+  imixin { tree_node }
+  
   output: cell // threejs camera
 
   init {:
@@ -293,7 +293,7 @@ obj "points" {
     ch&: cell
   }
 
-  tree: tree_node
+  imixin { tree_node }
   output: cell
 
   init {:

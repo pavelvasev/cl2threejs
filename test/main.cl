@@ -12,6 +12,7 @@ import std="std" dom="dom" lib3d="lib3d"
 
 obj "box" {
   in { cf&:cell }
+  imixin { tree_node }
   output := dom.element "div" style="display: flex; flex-direction: column; border: 1px solid;" cf=@cf
 }
 
@@ -20,7 +21,7 @@ obj "column" {
      style: cell ""
      cf&:cell 
   }
-  tree: tree_node
+  imixin { tree_node }
   output := dom.element "div" style=( + "display: flex; flex-direction: column; " @style) cf=@cf
 }
 
