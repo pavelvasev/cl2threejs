@@ -35,9 +35,11 @@ mixin "tree_node" {
     output: cell // threejs object3d 
     apply_children @cf
 
-    init {:
-      self.is_lib3d_element = true
-    :}
+    /*
+        init {:
+          self.is_lib3d_element = true
+        :}
+    */
 
     react (list @rest @tag) {: vals|
       if (self.output.is_set)
@@ -86,9 +88,9 @@ mixin "tree_node" {
       cf&: cell
     }
     output := element "PointLight" 0xffffff 1.5 position=@position cf=@cf
-    init {:
+    /*init {:
       self.is_lib3d_element = true  
-    :}  
+    :}*/  
   }
 
   obj "scene" {
@@ -103,7 +105,6 @@ mixin "tree_node" {
       style: cell
     }
     output := dom.element "canvas" style=@style
-    is_element: cell
   }
 
 } // mixin "tree_node"
@@ -299,7 +300,7 @@ obj "points" {
   output: cell
 
   init {:
-    self.is_lib3d_element = true
+    //self.is_lib3d_element = true
     self.geometry = new THREE.BufferGeometry();
     self.material = new THREE.PointsMaterial( {alphaTest: 0.5} );
     let sceneObject = new THREE.Points( self.geometry, self.material );
@@ -339,8 +340,7 @@ obj "points" {
   react @radius {: v |
     self.material.size = v;
     self.material.needsUpdate = true
-  :}
-  
+  :}  
 
   //output := element "Points" @geometry @material position=@position ch=@ch
 }
