@@ -279,9 +279,7 @@ func "buffer" {: arr items_per_elem |
   return new THREE.BufferAttribute( new Float32Array(arr), items_per_elem || 3 ) 
 :}
 
-// вообще говоря надо на вход не позиции брать а буфер
-// ну потому что буфер это уже что-то что можно рисовать. и главное использовать в разных графических элементах
-obj "points" {
+process "points" {
   in {
     //position: cell 
     // positions и colors
@@ -304,6 +302,65 @@ obj "points" {
     self.geometry = new THREE.BufferGeometry();
     self.material = new THREE.PointsMaterial( {alphaTest: 0.5} );
     let sceneObject = new THREE.Points( self.geometry, self.material );
+
+    self.output.set( sceneObject )
+  :}
+
+  react @positions {: v |
+    //console.log("pts positions!",v)
+    self.geometry.setAttribute( 'position', v );
+    self.geometry.needsUpdate = true;    
+  :}
+  react @radiuses {: v |
+    self.geometry.setAttribute( 'radiuses', v );
+    self.geometry.needsUpdate = true;    
+  :}  
+  react @colors {: v |
+    if (v) {
+      self.geometry.setAttribute( 'color', v );
+      self.material.vertexColors = true;
+    } else {
+      self.geometry.deleteAttribute( 'color' );
+      self.material.vertexColors = false; 
+    }
+    self.geometry.needsUpdate = true;    
+  :}
+  react @color {: v |
+    //console.log("pts color!",v)
+    self.material.color = somethingToColor(v);
+    self.material.needsUpdate = true
+  :}
+  react @radius {: v |
+    self.material.size = v;
+    self.material.needsUpdate = true
+  :}  
+
+  //output := element "Points" @geometry @material position=@position ch=@ch
+}
+
+process "lines" {
+  in {
+    //position: cell 
+    // positions и colors
+    // тут бы сделать канал, чтобы ссылку не держать
+    // но делая канал мы не получаем уведомления если устанавливается константа
+    // следовательно это вопрос к модели так-то. к порядку ее работы.
+    positions: channel
+    colors: channel
+    radiuses: channel
+    color: cell 0xffffff
+    radius: cell 1
+    n_rest**: cell
+    ch&: cell
+  }
+
+  imixin { element tag=false cf=@ch **n_rest }
+
+  init {:
+    //self.is_lib3d_element = true
+    self.geometry = new THREE.BufferGeometry();
+    self.material = new THREE.LineBasicMaterial( {} );
+    let sceneObject = new THREE.LineSegments( self.geometry, self.material );
 
     self.output.set( sceneObject )
   :}
