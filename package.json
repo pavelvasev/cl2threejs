@@ -9,6 +9,7 @@
   "author": "Павел Васёв",
   "license": "MIT",
   "dependencies": {
-    "three": "^0.159.0"
+    "three": "^0.159.0",
+    "dom.cl": "github:pavelvasev/dom.cl"
   }
 }
