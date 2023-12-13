@@ -28,7 +28,7 @@ mixin "tree_node" {
         tag: cell "Object3D" // todo: param
         // это cl-объект с output в котором dom
         rest*: cell // todo: тоже бы param?
-        position: cell
+        position: cell [0,0,0]
         cf&: cell // дети
     }
     
@@ -84,7 +84,7 @@ mixin "tree_node" {
 
   obj "point_light" {
     in {
-      position: cell
+      position: cell [0,0,0]
       cf&: cell
     }
     output := element "PointLight" 0xffffff 1.5 position=@position cf=@cf
@@ -114,7 +114,7 @@ obj "render" {
     input: cell  // сцена которую рисовать
     view_dom: cell   // объект dom куды рисовать. или dom или view?
     camera: cell // камера которой рисовать    
-    subrenderers: cell
+    subrenderers: cell []
   }
 
   renderer: cell
@@ -195,7 +195,7 @@ obj "render" {
     renderer.render( scene, cam );
 
     if (self.subrenderers.is_set) {
-      for (let r of env.params.subrenderers)
+      for (let r of self.subrenderers.get())
         r.subrender( env.renderer );
     }
       

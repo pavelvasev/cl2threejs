@@ -3,27 +3,7 @@
 введенные определения затем можно использовать в других проектах и на веб-странице.
 */
 
-/* todo: 
-   - buffer вместо positions сделать. это полезно и ближе к реальности.
-   а так.. ну если что встроенный адаптер если массив подали..
-*/
-
 import std="std" dom="dom" lib3d="lib3d"
-
-obj "box" {
-  in { cf&:cell }
-  imixin { tree_node }
-  output := dom.element "div" style="display: flex; flex-direction: column; border: 1px solid;" cf=@cf
-}
-
-obj "column" {
-  in { 
-     style: cell ""
-     cf&:cell 
-  }
-  imixin { tree_node }
-  output := dom.element "div" style=( + "display: flex; flex-direction: column; " @style) cf=@cf
-}
 
 func "makegrid" {: w h |
   let acc = [];
@@ -35,19 +15,19 @@ func "makegrid" {: w h |
 
 obj "main" {
   
-  output := column style="height: 95vh" {
+  output := dom.column style="height: 95vh" {
     dom.element "h3" "Scene: "
 
     b1:= dom.element "button" "Нажми"
     react (dom.event @b1 "click") {: 
        console.log("he!");
-       d1.init_value.submit( Math.floor( Math.random()*100 ) )
+       d1.input_value.submit( Math.floor( Math.random()*100 ) )
     :}
 
     cbj: dom.checkbox "прыгать" false
     if @cbj.value {
       react (std.timer) {:
-        d1.init_value.submit( Math.floor( Math.random()*100 ) )        
+        d1.input_value.submit( Math.floor( Math.random()*100 ) )        
       :}
     }
 
@@ -69,10 +49,10 @@ obj "main" {
 
     dom.element "span" "select w"
     //d1: dom.input "range" min=0 max=200 init_value=10
-    d1: dom.input "range" min=0 max=150 init_value=10
+    d1: dom.input "range" min=0 max=150 input_value=10
     d2: dom.input "range" min=0 max=150 disabled=@do_join
         //init_value=(if @do_join { return @d1.value } else { return 10 })
-        init_value=10
+        input_value=10
     //print "d2.iv=" @d2.init_value
     print "do_join = " @do_join
     do_join := 1 
@@ -91,7 +71,7 @@ obj "main" {
     bind @cb.value @do_join
 
     fff: if @do_join {
-       bind @d1.value @d2.init_value
+       bind @d1.value @d2.input_value
        //print "bind seems working, @d1.value=" @d1.value
        //dom.element "h1" "HOHO"
        //print "HOHO CREATED!!!!!!!!!!!!!!!!!!!!!!!!"
