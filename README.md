@@ -5,6 +5,7 @@
 Добавьте модуль в Ваш слон-проект:
 ```
 clon add git@github.com:pavelvasev/lib3d.cl.git
+npm install --save three
 ```
 Подключите модуль в исходниках:
 ```
