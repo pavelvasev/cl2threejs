@@ -3,7 +3,7 @@
 введенные определения затем можно использовать в других проектах и на веб-странице.
 */
 
-import std="std" dom="dom" lib3d="lib3d"
+import std="std" dom="dom.cl" lib3d="lib3d"
 
 func "makegrid" {: w h |
   let acc = [];

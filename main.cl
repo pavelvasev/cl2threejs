@@ -1,5 +1,5 @@
 import THREE="js:three" 
-       dom="dom"
+       dom="dom.cl"
        CONTROLS="js:three/addons/controls/OrbitControls.js"
 
 /*
