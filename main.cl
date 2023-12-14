@@ -233,8 +233,8 @@ obj "render" {
 obj "camera" {
 
   in {
-    position: cell [0,0,0]  // положение
-    lookat: cell [0,0,0]    // куда смотрит
+    position: cell [0,20,100]  // положение
+    look_at: cell [0,0,0]    // куда смотрит
     theta: 0 // угол поворота
   }
 
@@ -246,14 +246,18 @@ obj "camera" {
     let width = 100
     let height = 100
     let camin = 0.00001
-    self.output.set( new THREE.PerspectiveCamera( 75, width/height, camin, 1000*1000 ))
+    let cam = new THREE.PerspectiveCamera( 75, width/height, camin, 1000*1000 )
+    cam.cl_item = self
+    self.output.set( cam)
     //console.log("cam created")
   :}
 
-  react @position {: pos | self.output.get().position.set( ...pos ) :}
-  react @lookat {: pos | 
+  react @position {: pos | 
+    self.output.get().position.set( ...pos ) 
+  :}
+  react @look_at {: pos | 
     let camera = self.output.get()
-    //console.log("cam use",camera)
+    //console.log("cam use",camera,"loook at",pos)
     camera.lookAt( new THREE.Vector3( ...pos ) ) 
   :}
 }
@@ -265,9 +269,22 @@ obj "camera_control" {
     camera: cell // объект threejs
     dom: cell // dom-объект
     type: cell "OrbitControls"
+    look_at: cell [0,0,0]
   }
 
   output: cell
+
+  react (list @output @look_at) {:
+    let cc = output.get()
+    //console.log("setting target")
+    cc.target.set( ...look_at.get() )
+    cc.update()
+  :}
+
+  // это черезчур мудрено получилось..
+  react (read_cell (get @camera "cl_item") "look_at") {: tgt |
+    self.look_at.submit( tgt )
+  :}
 
   react (list @camera @dom @type) {:
     let t = self.type.get()
@@ -280,9 +297,10 @@ obj "camera_control" {
       self.output.get().dispose()
 
     self.output.set( cc )
-    //console.log("control configured",cc,self.dom.get())
+    //console.log("control configured",cc,camera)
 
-    camera.position.set( 0, 20, 100 );
+    //camera.position.set( 0, 20, 100 );
+
     cc.update();
   :}
 
@@ -363,6 +381,7 @@ process "lines" {
     radiuses: channel
     color: cell 0xffffff
     radius: cell 1
+    strip: const false // если true то линия прямая
     n_rest**: cell
     ch&: cell
   }
@@ -373,7 +392,9 @@ process "lines" {
     //self.is_lib3d_element = true
     self.geometry = new THREE.BufferGeometry();
     self.material = new THREE.LineBasicMaterial( {} );
-    let sceneObject = new THREE.LineSegments( self.geometry, self.material );
+    
+    let cla = strip ? THREE.Line : THREE.LineSegments
+    let sceneObject = new cla( self.geometry, self.material );
 
     self.output.set( sceneObject )
   :}
