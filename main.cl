@@ -29,6 +29,8 @@ mixin "tree_node" {
         // это cl-объект с output в котором dom
         rest*: cell // todo: тоже бы param?
         position: cell [0,0,0]
+        scale: cell [1,1,1]
+        visible: cell true
         cf&: cell // дети
     }
     
@@ -53,6 +55,17 @@ mixin "tree_node" {
 
     react (list @output @position) {: 
       self.output.get().position.set( ...self.position.get() )
+    :}
+
+    react (list @output @scale) {: 
+      let s = self.scale.get()
+      if (!Array.isArray(s)) s = [s,s,s]
+      self.output.get().scale.set( ...s )
+    :}    
+
+    react (list @output @visible) {: 
+      let obj = self.output.get()
+      obj.visible = self.visible.get() 
     :}
 
       func "sync_children" {: children |
