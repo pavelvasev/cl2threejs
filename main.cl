@@ -31,6 +31,7 @@ mixin "tree_node" {
         position: cell [0,0,0]
         scale: cell [1,1,1]
         visible: cell true
+        cull: cell false // отсечение фрустумом https://threejs.org/docs/#api/en/core/Object3D.frustumCulled
         cf&: cell // дети
     }
     
@@ -67,6 +68,11 @@ mixin "tree_node" {
       let obj = self.output.get()
       obj.visible = self.visible.get() 
     :}
+
+    react (list @output @cull) {: 
+      let obj = self.output.get()
+      obj.frustumCulled = self.cull.get() 
+    :}    
 
       func "sync_children" {: children |
           //console.log("sync_children", self+'')
@@ -333,6 +339,7 @@ process "points" {
     self.geometry = new THREE.BufferGeometry();
     self.material = new THREE.PointsMaterial( {alphaTest: 0.5} );
     let sceneObject = new THREE.Points( self.geometry, self.material );
+    //sceneObject.frustumCulled = false
 
     self.output.set( sceneObject )
   :}
