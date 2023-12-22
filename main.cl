@@ -77,11 +77,17 @@ mixin "tree_node" {
       func "sync_children" {: children |
           //console.log("sync_children", self+'')
           let parent = self
-          let parent_obj = parent.output.get()        
+          let parent_obj = parent.output.get()
+
+          // F-REMOVE-FROM-THREEJS удаление из threejs тех что убрали из ячейки children
+          let installed_children = new Set( parent_obj.children )
+
           for (let child_obj of children) {
               if (!(child_obj instanceof THREE.Object3D)) continue
               parent_obj.add( child_obj )
+              installed_children.delete( child_obj )
           }
+          installed_children.forEach( c => parent_obj.remove( c ))
       :}
 
       react @xx.output @sync_children
