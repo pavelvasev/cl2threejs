@@ -95,6 +95,7 @@ mixin "tree_node" {
       //react @child_elem_outputs { v| print "oooxxx=" @v }
 
       child_elem_outputs := apply {: children |
+          console.log("element scans children. self=",self,"children=",children )
           let res = []
           for (let ch of children) {
               // решено убрать т.к. там и так потом проверка есть.
@@ -118,13 +119,6 @@ mixin "tree_node" {
     :}*/  
   }
 
-  obj "scene" {
-    in {
-      cf&: cell
-    }
-    output := element "Scene" cf=@cf
-  }
-
   obj "view" {
     in {
       style: cell
@@ -133,6 +127,14 @@ mixin "tree_node" {
   }
 
 } // mixin "tree_node"
+
+  obj "scene" {
+    in {
+      ch&: cell
+    }
+    //output := element "Scene" cf=@cf
+    imixin { element tag="Scene" cf=@ch }
+  }
 
 obj "render" {
   in {
