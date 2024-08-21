@@ -30,6 +30,7 @@ mixin "tree_node" {
         rest*: cell // todo: тоже бы param?
         position: cell [0,0,0]
         scale: cell [1,1,1]
+        rotation: cell [0,0,0]
         visible: cell true
         cull: cell false // отсечение фрустумом https://threejs.org/docs/#api/en/core/Object3D.frustumCulled
         cf&: cell // дети
@@ -57,6 +58,10 @@ mixin "tree_node" {
     react (list @output @position) {: 
       self.output.get().position.set( ...self.position.get() )
     :}
+    
+    react (list @output @rotation) {: 
+      self.output.get().rotation.set( ...self.rotation.get() )
+    :}    
 
     react (list @output @scale) {: 
       let s = self.scale.get()
@@ -95,7 +100,7 @@ mixin "tree_node" {
       //react @child_elem_outputs { v| print "oooxxx=" @v }
 
       child_elem_outputs := apply {: children |
-          console.log("element scans children. self=",self,"children=",children )
+          // console.log("element scans children. self=",self,"children=",children )
           let res = []
           for (let ch of children) {
               // решено убрать т.к. там и так потом проверка есть.
@@ -417,11 +422,11 @@ process "lines" {
   react @positions {: v |
     //console.log("pts positions!",v)
     self.geometry.setAttribute( 'position', v );
-    self.geometry.needsUpdate = true;    
+    self.geometry.needsUpdate = true;
   :}
   react @radiuses {: v |
     self.geometry.setAttribute( 'radiuses', v );
-    self.geometry.needsUpdate = true;    
+    self.geometry.needsUpdate = true;
   :}  
   react @colors {: v |
     if (v) {
